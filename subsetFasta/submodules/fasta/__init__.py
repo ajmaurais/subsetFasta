@@ -1,1 +1,1 @@
-from .fasta import write_fasta_entry, FastaFile
+from .fasta import write_fasta_entry, format_sequence, FastaFile

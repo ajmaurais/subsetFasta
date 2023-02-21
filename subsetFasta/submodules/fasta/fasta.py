@@ -33,6 +33,19 @@ def write_fasta_entry(fname, accession, sequence, description='', write_mode='a'
         outF.write('\n>sp|{}|{}\n{}'.format(accession, description, sequence))
 
 
+def format_sequence(seq, max_line_len=None):
+    seq_f = re.sub(r'\s', '', seq)
+    if max_line_len is None:
+        return seq_f
+    ret = ''
+    for index in range(0, len(seq_f), max_line_len):
+        if index == 0:
+            ret = seq_f[index:min(len(seq_f), index + max_line_len)]
+        else:
+            ret += '\n' + seq_f[index:min(len(seq_f), index + max_line_len)]
+    return ret
+
+
 class FastaFile():
     '''
     Basic FastaFile container, optimized for random access.
