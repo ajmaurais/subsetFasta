@@ -8,7 +8,7 @@ from .submodules.fasta import FastaFile, format_sequence
 def readIdsFromFile(fname):
     with open(fname, 'r') as inF:
         lines = [x.strip() for x in inF.readlines()]
-    return set(lines)
+    return lines
 
 
 def writeEntries(fname, entries, multi_line=False):
@@ -36,10 +36,19 @@ def main():
     print(ofname)
 
     # init select_ids
-    select_ids = set()
+    select_ids = list()
     if args.file is not None:
         select_ids = readIdsFromFile(args.file)
-    select_ids.update(set(args.ids))
+    select_ids += args.ids
+
+    # Only keep the first occurance of duplicate ids
+    seen_ids = set()
+    unique_select_ids = list()
+    for protein_id in select_ids:
+        if protein_id not in seen_ids:
+            unique_select_ids.append(protein_id)
+        seen_ids.add(protein_id)
+
     fasta = FastaFile()
     fasta.read(args.fasta)
 
