@@ -2,7 +2,7 @@
 import re
 
 
-def write_fasta_entry(fname, accession, sequence, description='', write_mode='a'):
+def write_fasta_entry(fname, accession, sequence, description='', write_mode='a', db='sb'):
     '''
     Write fasta entry to `fname`
 
@@ -18,6 +18,9 @@ def write_fasta_entry(fname, accession, sequence, description='', write_mode='a'
         Entry description (optional)
     write_mode: str
         File write mode (must be 'w' or 'a')
+    db: str
+        The sequence database (usually sp or tr). Default is 'sp'.
+        
 
     Raises
     ------
@@ -30,7 +33,7 @@ def write_fasta_entry(fname, accession, sequence, description='', write_mode='a'
     if write_mode not in ('a', 'w'):
         raise ValueError('{} is an invalid write_mode.'.format(write_mode))
     with open(fname, write_mode) as outF:
-        outF.write('\n>sp|{}|{}\n{}'.format(accession, description, sequence))
+        outF.write('\n>{}|{}|{}\n{}'.format(db, accession, description, sequence))
 
 
 def format_sequence(seq, max_line_len=None):
@@ -88,7 +91,7 @@ class FastaFile():
 
     acession_re = r'\w+'
     sequence_re = r'[A-Za-z\s]*'
-    entry_re = re.compile(r'>[st][rp]\|({})\|(.*)\n({})(?=[>])?'.format(acession_re, sequence_re))
+    entry_re = re.compile(r'>(sp|tr)\|({})\|(.*)\n({})(?=[>])?'.format(acession_re, sequence_re))
 
     def __init__(self):
         self._id_offsets = dict()
@@ -96,7 +99,7 @@ class FastaFile():
 
     def _find_offsets(self):
         for m in re.finditer(self.entry_re, self._fbuff):
-            self._id_offsets[m.group(1)] = m.span()
+            self._id_offsets[m.group(2)] = m.span()
 
     def read(self, fname):
         '''
@@ -177,9 +180,9 @@ class FastaFile():
         '''
         m = self.entry_re.search(self._fbuff[begin:end])
         assert(m)
-        assert(m.group(1) == accession)
-        # return tuple(re.sub(r'\s', '', x) for x in (m.group(3), m.group(2)))
-        return m.group(2), re.sub(r'\s', '', m.group(3))
+        assert(m.group(2) == accession)
+        return m.group(1), m.group(3), re.sub(r'\s', '', m.group(4))
+        # return m.group(1), re.sub(r'\s', '', m.group(3)), m.group(4)
 
     def get_entry(self, accession):
         '''
@@ -203,5 +206,5 @@ class FastaFile():
         '''
 
         _offset = self._get_offset(accession)
-        return self._get_entry(accession, _offset[0], _offset[1])[1]
+        return self._get_entry(accession, _offset[0], _offset[1])[2]
 

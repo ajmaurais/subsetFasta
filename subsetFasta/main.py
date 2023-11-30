@@ -13,8 +13,8 @@ def readIdsFromFile(fname):
 
 def writeEntries(fname, entries, multi_line=False):
     with open(fname, 'w') as outF:
-        for accession, description, seq in entries:
-            outF.write('>sp|{}|{}\n{}\n'.format(accession, description,
+        for accession, db, description, seq in entries:
+            outF.write('>{}|{}|{}\n{}\n'.format(db, accession, description,
                                                 format_sequence(seq, 60) if multi_line else seq))
 
 
@@ -43,7 +43,7 @@ def main():
     fasta = FastaFile()
     fasta.read(args.fasta)
 
-    entries = [(protein, *fasta.get_entry(protein)) for protein in select_ids]
+    entries = [(protein_id, *fasta.get_entry(protein_id)) for protein_id in select_ids]
     writeEntries(ofname, entries, multi_line=args.multiLine)
 
 if __name__ == '__main__':

@@ -47,7 +47,7 @@ class TestFasta(unittest.TestCase):
 
     def test_format_sequence(self):
         fasta_reader = self._read_test_file(TestFasta.TEST_FASTA)
-        reader_seqs = {accession: entry[1] for _, accession, entry in fasta_reader.iter_items()}
+        reader_seqs = {accession: entry[2] for _, accession, entry in fasta_reader.iter_items()}
 
         # test no max line length
         formated = {accession: fasta.format_sequence(seq) for accession, seq in reader_seqs.items()}
@@ -69,9 +69,9 @@ class TestFasta(unittest.TestCase):
             with tempfile.TemporaryDirectory() as temp_dir:
                 temp_file_path = os.path.join(temp_dir, 'temp.fasta')
                 with open(temp_file_path, 'w') as outF:
-                    for i, accession, (description, seq) in fasta_reader.iter_items():
+                    for i, accession, (db, description, seq) in fasta_reader.iter_items():
                         seq_f = fasta.format_sequence(seq, line_len)
-                        outF.write(f'>sp|{accession}|{description}\n{seq_f}\n')
+                        outF.write(f'>{db}|{accession}|{description}\n{seq_f}\n')
 
                 test_reader = self._read_test_file(temp_file_path)
                 self.assertListEqual(sorted([x for _, x in test_reader.iter_ids()]),
