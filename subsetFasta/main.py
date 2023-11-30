@@ -23,12 +23,16 @@ def main():
     parser.add_argument('-f', '--file', default=None, help='Obtain ids from a file')
     parser.add_argument('--multiLine', default=False, action='store_true',
                         help='Add line break every 60 characters in protein sequences.')
+    parser.add_argument('-o', '--ofname', default=None,
+                        help='Output fasta name. Default is <fasta>_subset.fasta')
     parser.add_argument('fasta', help='The fasta file to filter')
     parser.add_argument('ids', nargs='*', help='The IDs to select.')
     args = parser.parse_args()
     
     # make ofname
-    ofname = '{}_subset.fasta'.format(os.path.splitext(os.path.basename(args.fasta))[0])
+    ofname = args.ofname
+    if ofname is None:
+        ofname = '{}_subset.fasta'.format(os.path.splitext(os.path.basename(args.fasta))[0])
     print(ofname)
 
     # init select_ids
