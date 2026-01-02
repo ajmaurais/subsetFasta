@@ -1,0 +1,9 @@
+#!/usr/bin/python3
+
+import sys
+
+sys.path.append('/home/ajm/code/subsetFasta')
+
+from subsetFasta.main import main
+main()
+
