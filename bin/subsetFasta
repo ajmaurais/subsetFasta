@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
 import sys
+from os.path import abspath
 
-sys.path.append('/home/ajm/code/subsetFasta')
+sys.path.append(abspath(f'{__file__}/../../'))
 
 from subsetFasta.main import main
 main()
